@@ -1,7 +1,7 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow } = require('electron')
 const path = require('node:path')
-
+const { windowStateManager } = require('electron-browserwindow-manager')
 function createWindow () {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -9,8 +9,20 @@ function createWindow () {
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js')
-    }
+    },
+    show: false
   })
+
+  windowStateManager.manage(mainWindow, {
+    stateId: 'first-window',
+    bounds: true,
+    displayMode: true
+  })
+
+  // Show window after state is applied
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show();
+  });
 
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
